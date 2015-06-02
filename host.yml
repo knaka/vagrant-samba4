@@ -18,12 +18,14 @@
     - service:
         name: samba-ad-dc
         state: started
-    - debug: var=ansible_eth1
+    # - debug: var=ansible_eth1
     - stat: path=/var/lib/samba/private/tls
       register: stat_samba_tls
-    - shell: rm -f /etc/samba/smb.conf && samba-tool domain provision --use-rfc2307 --option="interfaces=lo eth1" --option="bind interfaces only=yes" --option="dns forwarder=8.8.8.8" --use-ntvfs --realm=DOM.AYUTAYA.COM --domain=DOM --server-role=dc --dns-backend=SAMBA_INTERNAL --option="netbios name=HOGE"
+    - shell: rm -f /etc/samba/smb.conf && samba-tool domain provision --use-rfc2307 --option="interfaces=lo eth1" --option="bind interfaces only=yes" --option="dns forwarder=8.8.8.8" --use-ntvfs --realm=SAMDOM.EXAMPLE.COM --domain=SAMDOM --server-role=dc --dns-backend=SAMBA_INTERNAL --option="netbios name=MYHOST"
       when: not stat_samba_tls.stat.exists
       notify: Restart SAMBA AD DC
+    - debug: msg="Samba 4 が {{ansible_eth1.ipv4.address}} で動作中。"
+      changed_when: false
   handlers:
     - name: Restart SAMBA AD DC
       service:
@@ -31,7 +33,6 @@
         state: restarted
 
 ...
-
 
     # - template:
     #     src: smb.conf.j2
@@ -42,5 +43,5 @@
     # - debug: var=ohai_network
     # samba-tool domain provision --use-rfc2307 --option="interfaces=lo eth0" --option="bind interfaces only=yes" --option="dns forwarder={{gateway}}" --use-ntvfs
 
-    # samba-tool domain provision --use-rfc2307 --option="interfaces=lo eth1" --option="bind interfaces only=yes" --option="dns forwarder=10.0.2.3" --use-ntvfs --realm=DOM.AYUTAYA.COM --domain=DOM --server-role=dc --dns-backend=SAMBA_INTERNAL
+    # samba-tool domain provision --use-rfc2307 --option="interfaces=lo eth1" --option="bind interfaces only=yes" --option="dns forwarder=10.0.2.3" --use-ntvfs --realm=SAMDOM.EXAMPLE.COM --domain=DOM --server-role=dc --dns-backend=SAMBA_INTERNAL
 
