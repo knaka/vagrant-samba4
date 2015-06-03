@@ -21,7 +21,7 @@
     # - debug: var=ansible_eth1
     - stat: path=/var/lib/samba/private/tls
       register: stat_samba_tls
-    - shell: rm -f /etc/samba/smb.conf && samba-tool domain provision --use-rfc2307 --option="interfaces=lo eth1" --option="bind interfaces only=yes" --option="dns forwarder=8.8.8.8" --use-ntvfs --realm=SAMDOM.EXAMPLE.COM --domain=SAMDOM --server-role=dc --dns-backend=SAMBA_INTERNAL --option="netbios name=MYHOST"
+    - shell: rm -f /etc/samba/smb.conf && samba-tool domain provision --use-rfc2307 --option="interfaces=lo eth1" --option="bind interfaces only=yes" --option="dns forwarder=8.8.8.8" --use-ntvfs --realm=SAMDOM.EXAMPLE.COM --domain=SAMDOM --server-role=dc --dns-backend=SAMBA_INTERNAL --option="netbios name=MYHOST" --adminpass='Pa$$w0rd'
       when: not stat_samba_tls.stat.exists
       notify: Restart SAMBA AD DC
     - debug: msg="Samba 4 が {{ansible_eth1.ipv4.address}} で動作中。"
