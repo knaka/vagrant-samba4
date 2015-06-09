@@ -1,0 +1,15 @@
+---
+
+- name: Restart SAMBA AD DC
+  service:
+    name: samba-ad-dc
+    state: restarted
+
+- name: apparmor 再読み込み
+  service: name=apparmor state=reloaded
+
+- name: bind9 再起動
+  service: name=bind9 state=restarted
+
+...
+

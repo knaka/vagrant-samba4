@@ -1,0 +1,53 @@
+---
+
+- name: 必要なパッケージがインストールされていること
+  apt: name={{item}} state=present
+  with_items:
+    - samba
+    - bind9
+
+- service:
+    name: smbd
+    state: stopped
+
+- service:
+    name: samba-ad-dc
+    state: started
+
+# - debug: var=ansible_eth1
+
+- stat: path=/var/lib/samba/private/tls
+  register: stat_samba_tls
+
+- shell: rm -f /etc/samba/smb.conf && samba-tool domain provision --use-rfc2307 --option="interfaces=lo eth1" --option="bind interfaces only=yes" --option="dns forwarder=8.8.8.8" --use-ntvfs --realm=SAMDOM.EXAMPLE.COM --domain=SAMDOM --server-role=dc --dns-backend=SAMBA_INTERNAL --option="netbios name=MYHOST" --adminpass='Pa$$w0rd'
+  when: not stat_samba_tls.stat.exists
+  notify: Restart SAMBA AD DC
+
+- debug: msg="Samba 4 が {{ansible_eth1.ipv4.address}} で動作中。"
+  changed_when: false
+
+- name: bind 連携用 apparmor 設定がなされていること
+  lineinfile:
+    dest: /etc/apparmor.d/local/usr.sbin.named
+    regexp: "^/var/lib/samba/private/"
+    line: "/var/lib/samba/private/** r,"
+    backup: true
+  notify: apparmor 再読み込み
+
+- name: bind 連携設定の stat を取得する
+  stat: path=/var/lib/samba/private/named.conf
+  register: samba_bind_conf_stat
+  ignore_errors: true
+  changed_when: false
+
+- name: bind 連携が include されていること
+  when: samba_bind_conf_stat.stat.exists
+  lineinfile:
+    dest: /etc/bind/named.conf
+    regexp: '^include "/var/lib/samba/private/named.conf";'
+    line: 'include "/var/lib/samba/private/named.conf";'
+    backup: true
+  notify: bind9 再起動
+
+...
+

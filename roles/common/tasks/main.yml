@@ -1,0 +1,30 @@
+---
+
+# - name: update apt cache if not done today
+- name: apt キャッシュが 24 時間以内に更新されていること
+  apt: update_cache=yes cache_valid_time=86400
+
+# - name: Instal basic packages
+#   yum: name={{item}} state=present
+#   with_items:
+#     - libselinux-python
+
+- name: NTP がインストールされていること
+  apt: name=ntp state=present
+  tags: ntp
+
+# - name: configure ntp file
+#   template: src=ntp.conf.j2 dest=/etc/ntp.conf backup=yes
+#   tags: ntp
+#   notify: restart ntp
+
+- name: NTP サーバが稼働していること
+  service: name=ntp state=started enabled=yes
+  tags: ntp
+
+# - name: test to see if selinux is running
+#   command: getenforce
+#   register: sestatus
+#   changed_when: false
+
+...

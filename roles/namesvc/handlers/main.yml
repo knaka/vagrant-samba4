@@ -1,0 +1,6 @@
+---
+
+- name: bind9 再起動
+  service: name=bind9 state=restarted
+
+...

@@ -1,0 +1,29 @@
+---
+
+- name: 必要なパッケージがインストールされていること
+  apt: name=bind9 state=present
+
+- name: サーバのゾーンファイルが存在すること
+  copy:
+    content: |
+      $ttl 10
+      @	IN  SOA www.example.com. root.www.example.com. (
+      	2015053003 ;
+      	20800 ;
+      	3600 ;
+      	432000 ;
+      	38400 ) ;
+      		IN NS	ns1.value-domain.com.
+      		IN A	{{ansible_eth1.ipv4.address}}
+    dest: /etc/bind/svc.example.com.zone
+  notify: bind9 再起動
+
+- name: ローカルの設定ファイルが存在すること
+  copy:
+    content: |
+      zone "svc.example.com." { type master; file "/etc/bind/svc.example.com.zone"; };
+      zone "www.example.com." { type master; file "/etc/bind/svc.example.com.zone"; };
+    dest: /etc/bind/named.conf.local
+  notify: bind9 再起動
+
+...
