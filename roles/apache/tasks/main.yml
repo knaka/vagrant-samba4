@@ -1,0 +1,14 @@
+---
+
+- apt:
+    name={{item}} state=present
+  with_items:
+    - apache2
+    - libapache2-mod-auth-kerb
+  notify: Apache2 を再起動
+
+- service:
+    name: apache2
+    state: started
+
+...

@@ -6,6 +6,7 @@
     - { role: common, sudo: true }
     - { role: namesvc, sudo: true }
     - { role: samba4, sudo: true }
+    - { role: apache, sudo: true }
 
 ...
 
