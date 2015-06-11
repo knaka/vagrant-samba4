@@ -7,7 +7,7 @@
   copy:
     content: |
       $ttl 10
-      @	IN  SOA www.example.com. root.www.example.com. (
+      @	IN  SOA svc.samdom.example.com. root.svc.samdom.example.com. (
       	2015053003 ;
       	20800 ;
       	3600 ;
@@ -15,15 +15,21 @@
       	38400 ) ;
       		IN NS	ns1.value-domain.com.
       		IN A	{{ansible_eth1.ipv4.address}}
-    dest: /etc/bind/svc.example.com.zone
+    dest: /etc/bind/svc.samdom.example.com.zone
   notify: bind9 再起動
 
 - name: ローカルの設定ファイルが存在すること
   copy:
     content: |
-      zone "svc.example.com." { type master; file "/etc/bind/svc.example.com.zone"; };
-      zone "www.example.com." { type master; file "/etc/bind/svc.example.com.zone"; };
+      zone "svc.samdom.example.com." { type master; file "/etc/bind/svc.samdom.example.com.zone"; };
+      zone "svc1.samdom.example.com." { type master; file "/etc/bind/svc.samdom.example.com.zone"; };
+      zone "svc2.samdom.example.com." { type master; file "/etc/bind/svc.samdom.example.com.zone"; };
     dest: /etc/bind/named.conf.local
   notify: bind9 再起動
+
+# Dirty hack
+- shell: test -L /etc/resolv.conf && rm -f /etc/resolv.conf && echo nameserver 127.0.0.1 > /etc/resolv.conf && chattr +i /etc/resolv.conf
+  changed_when: false
+  ignore_errors: true
 
 ...

@@ -9,6 +9,8 @@
 #   with_items:
 #     - libselinux-python
 
+- apt: upgrade=yes
+
 - name: NTP がインストールされていること
   apt: name=ntp state=present
   tags: ntp

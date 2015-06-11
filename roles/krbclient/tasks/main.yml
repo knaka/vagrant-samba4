@@ -1,0 +1,37 @@
+---
+
+- apt:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - heimdal-clients
+    - smbclient
+
+- name: ローカルの設定ファイルが存在すること
+  copy:
+    content: |
+      [logging]
+      default = FILE:/var/log/krb5libs.log
+      kdc = FILE:/var/log/krb5kdc.log
+      admin_server = FILE:/var/log/kadmind.log
+
+      [libdefaults]
+      default_realm = SAMDOM.EXAMPLE.COM
+      dns_lookup_realm = false
+      dns_lookup_kdc = true
+
+      [realms]
+      SAMDOM.EXAMPLE.COM = {
+      	kdc = dchost.samdom.example.com
+      }
+
+      [domain_realm]
+      .samdom.example.com = SAMDOM.EXAMPLE.COM
+      samdom.example.com = SAMDOM.EXAMPLE.COM
+    dest: /etc/krb5.conf
+
+# kinit administrator@SAMDOM.EXAMPLE.COM
+# smbclient //dchost.samdom.example.com/netlogon -UAdministrator
+
+...
+
