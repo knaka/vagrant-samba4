@@ -26,6 +26,7 @@
     samba-tool spn add HTTP/{{item}}.samdom.example.com {{item}}
     samba-tool domain exportkeytab /etc/apache2/{{item}}.keytab --principal=HTTP/{{item}}.samdom.example.com
     chmod 666 /etc/apache2/{{item}}.keytab
+    a2ensite {{item}}
     service apache2 reload
   with_items:
     - svc1
