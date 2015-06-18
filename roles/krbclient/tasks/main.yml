@@ -30,7 +30,7 @@
       samdom.example.com = SAMDOM.EXAMPLE.COM
     dest: /etc/krb5.conf
 
-# kinit administrator@SAMDOM.EXAMPLE.COM
+# kinit Administrator@SAMDOM.EXAMPLE.COM
 # smbclient //dchost.samdom.example.com/netlogon -UAdministrator
 
 ...

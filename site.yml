@@ -8,5 +8,5 @@
     - { role: samba4, sudo: true }
     - { role: krbclient, sudo: true }
     - { role: apache, sudo: true }
-
+    - { role: sites, sudo: true }
 ...

@@ -12,8 +12,10 @@
 - apt: upgrade=yes
 
 - name: NTP がインストールされていること
-  apt: name=ntp state=present
-  tags: ntp
+  apt: name={{item}} state=present
+  with_items:
+    - ntp
+    - ntpdate
 
 # - name: configure ntp file
 #   template: src=ntp.conf.j2 dest=/etc/ntp.conf backup=yes
@@ -28,5 +30,11 @@
 #   command: getenforce
 #   register: sestatus
 #   changed_when: false
+
+- cron:
+    name: "Fix a big offset"
+    special_time: hourly
+    job: >-
+      test "$(ntpdate -q -p 1 pool.ntp.org | sed -nEe 's/^.* offset [-+]?([0-9]+)\.[0-9]+ sec$/\1/p')" -ge 60 && ntpdate -u pool.ntp.org && hwclock --systohc || :
 
 ...

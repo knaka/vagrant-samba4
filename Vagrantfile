@@ -12,6 +12,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.groups = {
       "main" => ["ubuntu"]
     }
-    ansible.playbook = "host.yml"
+    ansible.playbook = "site.yml"
   end
 end

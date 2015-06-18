@@ -1,0 +1,14 @@
+<VirtualHost *:80>
+	ServerName {{item}}.samdom.example.com
+	DocumentRoot /var/www/html-{{item}}
+	<Directory "/var/www/html-{{item}}/secret">
+		AuthType Kerberos
+		AuthName "Secret Service"
+		KrbMethodNegotiate On
+		KrbMethodK5Passwd Off
+		KrbServiceName HTTP/{{item}}.samdom.example.com
+		KrbAuthRealms SAMDOM.EXAMPLE.COM
+		require valid-user
+		Krb5KeyTab /etc/apache2/{{item}}.keytab
+	</Directory>
+</VirtualHost>

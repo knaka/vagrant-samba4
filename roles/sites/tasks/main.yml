@@ -1,0 +1,35 @@
+---
+
+- name: サイトごとのコンテンツが更新されていること
+  synchronize:
+    src: html-{{item}}/
+    dest: /var/www/html-{{item}}/
+    delete: yes
+    rsync_path: "sudo rsync"
+  with_items:
+    - svc1
+    - svc2
+
+- name: Apache site の設定が存在すること
+  template:
+    src: svc.conf.j2
+    dest: /etc/apache2/sites-available/{{item}}.conf
+  with_items:
+    - svc1
+    - svc2
+
+- name: SPNEGO を設定する
+  shell: |
+    rm -f /etc/apache2/{{item}}.keytab
+    samba-tool user delete {{item}}
+    samba-tool user create --random-password {{item}}
+    samba-tool spn add HTTP/{{item}}.samdom.example.com {{item}}
+    samba-tool domain exportkeytab /etc/apache2/{{item}}.keytab --principal=HTTP/{{item}}.samdom.example.com
+    chmod 666 /etc/apache2/{{item}}.keytab
+    service apache2 reload
+  with_items:
+    - svc1
+    - svc2
+
+...
+
